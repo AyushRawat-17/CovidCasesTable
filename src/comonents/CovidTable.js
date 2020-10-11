@@ -6,16 +6,29 @@ import TableRow from "@material-ui/core/TableRow";
 import TableCell from "@material-ui/core/TableCell";
 import Paper from "@material-ui/core/Paper";
 import HeadingElement from "./HeadingElements";
-import TableBody from '@material-ui/core/TableBody';
-import Body from './Body'
+import TableBody from "@material-ui/core/TableBody";
+import TablePagination from "@material-ui/core/TablePagination";
+import TableFooter from "@material-ui/core/TableFooter";
+import Body from "./Body";
 function CovidTable(props) {
+  const [page, setPage] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(10);
 
-  function tableCell(headingitem){
-        return <TableCell >{headingitem}</TableCell>;
-  }    
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
 
-  function bodyElement(item){
-    return(
+  const handleChangeRowsPerPage = event => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+  function tableCell(headingitem) {
+    return <TableCell>{headingitem}</TableCell>;
+  }
+
+  function bodyElement(item) {
+    return (
       <Body
         country={item.country}
         cases={item.cases}
@@ -35,9 +48,18 @@ function CovidTable(props) {
           <TableHead>
             <TableRow>{HeadingElement.map(tableCell)}</TableRow>
           </TableHead>
-          <TableBody>
-          {props.data.map(bodyElement)}
-          </TableBody>
+          <TableBody>{props.data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(bodyElement)}</TableBody>
+          <TableFooter>
+            <TablePagination
+              rowsPerPageOptions={[5, 10, 25]}
+              component="div"
+              count={props.data.length}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              onChangePage={handleChangePage}
+              onChangeRowsPerPage={handleChangeRowsPerPage}
+            />
+          </TableFooter>
         </Table>
       </TableContainer>
     </Paper>
